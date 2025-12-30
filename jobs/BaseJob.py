@@ -2,7 +2,7 @@ import importlib
 from collections import OrderedDict
 from typing import List
 
-from jobs.process import BaseProcess
+from .process.BaseProcess import BaseProcess
 
 
 class BaseJob:

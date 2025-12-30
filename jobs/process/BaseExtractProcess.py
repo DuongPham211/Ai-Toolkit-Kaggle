@@ -3,7 +3,7 @@ from collections import OrderedDict
 
 from safetensors.torch import save_file
 
-from jobs.process.BaseProcess import BaseProcess
+from .BaseProcess import BaseProcess
 from toolkit.metadata import get_meta_for_safetensors
 
 from typing import ForwardRef

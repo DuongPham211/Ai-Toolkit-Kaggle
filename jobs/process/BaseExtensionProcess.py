@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from typing import ForwardRef
-from jobs.process.BaseProcess import BaseProcess
+from .BaseProcess import BaseProcess
 
 
 class BaseExtensionProcess(BaseProcess):

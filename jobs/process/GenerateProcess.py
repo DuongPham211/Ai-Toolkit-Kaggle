@@ -6,7 +6,7 @@ from typing import ForwardRef, List, Optional, Union
 import torch
 from safetensors.torch import save_file, load_file
 
-from jobs.process.BaseProcess import BaseProcess
+from .BaseProcess import BaseProcess
 from toolkit.config_modules import ModelConfig, GenerateImageConfig
 from toolkit.metadata import get_meta_for_safetensors, load_metadata_from_safetensors, add_model_hash_to_meta, \
     add_base_model_info_to_meta

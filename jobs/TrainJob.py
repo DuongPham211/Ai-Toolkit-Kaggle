@@ -4,9 +4,8 @@ import os
 from .BaseJob import BaseJob
 from toolkit.kohya_model_util import load_models_from_stable_diffusion_checkpoint
 from collections import OrderedDict
-from typing import List
 from .BaseJob import BaseJob
-from jobs.process import BaseExtractProcess
+from .process.BaseExtractProcess import BaseExtractProcess
 from datetime import datetime
 
 

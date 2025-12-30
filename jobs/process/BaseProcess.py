@@ -61,4 +61,7 @@ class BaseProcess(object):
         self.meta.update(additional_meta)
 
 
-from jobs import BaseJob
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..BaseJob import BaseJob

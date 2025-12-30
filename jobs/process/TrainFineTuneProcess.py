@@ -1,10 +1,12 @@
 from collections import OrderedDict
-from ..TrainJob import TrainJob
-from jobs.process import BaseTrainProcess
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..TrainJob import TrainJob
+from .BaseTrainProcess import BaseTrainProcess
 
 
 class TrainFineTuneProcess(BaseTrainProcess):
-    def __init__(self,process_id: int, job: TrainJob, config: OrderedDict):
+    def __init__(self, process_id: int, job: 'TrainJob', config: OrderedDict):
         super().__init__(process_id, job, config)
 
     def run(self):

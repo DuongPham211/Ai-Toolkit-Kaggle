@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Union
 import torch
 import yaml
 
-from jobs.process.BaseProcess import BaseProcess
+from .BaseProcess import BaseProcess
 
 if TYPE_CHECKING:
     from jobs import TrainJob, BaseJob, ExtensionJob

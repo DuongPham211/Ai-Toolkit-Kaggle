@@ -13,19 +13,19 @@ def get_job(
 
     job = config['job']
     if job == 'extract':
-        from jobs import ExtractJob
+        from jobs.ExtractJob import ExtractJob
         return ExtractJob(config)
     if job == 'train':
-        from jobs import TrainJob
+        from jobs.TrainJob import TrainJob
         return TrainJob(config)
     if job == 'mod':
-        from jobs import ModJob
+        from jobs.ModJob import ModJob
         return ModJob(config)
     if job == 'generate':
-        from jobs import GenerateJob
+        from jobs.GenerateJob import GenerateJob
         return GenerateJob(config)
     if job == 'extension':
-        from jobs import ExtensionJob
+        from jobs.ExtensionJob import ExtensionJob
         return ExtensionJob(config)
 
     # elif job == 'train':
