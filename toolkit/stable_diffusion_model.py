@@ -2402,9 +2402,15 @@ class StableDiffusion:
         # if it is not a list, make it one
         if not isinstance(prompt, list):
             prompt = [prompt]
+        
+        # fix: ensure everything in the list is a string
+        prompt = [str(p) if (p is not None and not isinstance(p, bool)) else "" for p in prompt]
 
         if prompt2 is not None and not isinstance(prompt2, list):
             prompt2 = [prompt2]
+        
+        if prompt2 is not None:
+            prompt2 = [str(p) if (p is not None and not isinstance(p, bool)) else "" for p in prompt2]
         if self.is_xl:
             # todo make this a config
             # 50% chance to use an encoder anyway even if it is disabled
