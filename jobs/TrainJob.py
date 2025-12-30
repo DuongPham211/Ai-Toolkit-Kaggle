@@ -10,13 +10,13 @@ from datetime import datetime
 
 
 process_dict = {
-    'vae': 'TrainVAEProcess',
-    'slider': 'TrainSliderProcess',
-    'slider_old': 'TrainSliderProcessOld',
-    'lora_hack': 'TrainLoRAHack',
-    'rescale_sd': 'TrainSDRescaleProcess',
-    'esrgan': 'TrainESRGANProcess',
-    'reference': 'TrainReferenceProcess',
+    # 'vae': 'TrainVAEProcess',
+    # 'slider': 'TrainSliderProcess',
+    # 'slider_old': 'TrainSliderProcessOld',
+    # 'lora_hack': 'TrainLoRAHack',
+    # 'rescale_sd': 'TrainSDRescaleProcess',
+    # 'esrgan': 'TrainESRGANProcess',
+    # 'reference': 'TrainReferenceProcess',
 }
 
 
