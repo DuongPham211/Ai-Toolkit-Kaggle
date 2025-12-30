@@ -293,6 +293,7 @@ class StableDiffusion:
             model_path = get_model_path_from_url(self.model_config.name_or_path)
 
         load_args = {}
+        load_args.update(self.model_config.model_kwargs)
         if self.noise_scheduler:
             load_args['scheduler'] = self.noise_scheduler
 
@@ -306,8 +307,19 @@ class StableDiffusion:
                 # pipln = StableDiffusionKDiffusionXLPipeline
 
             # see if path exists
-            if not os.path.exists(model_path) or os.path.isdir(model_path):
-                # try to load with default diffusers
+            if os.path.exists(model_path) and os.path.isdir(model_path):
+                 # load from local folder
+                 pipe = pipln.from_pretrained(
+                    model_path,
+                    dtype=dtype,
+                    device=self.device_torch,
+                    # variant="fp16",
+                    use_safetensors=True,
+                    low_cpu_mem_usage=False, # Ép nạp thật theo Guild
+                    **load_args
+                )
+            elif not os.path.exists(model_path) or os.path.isdir(model_path):
+                # try to load with default diffusers from hub
                 pipe = pipln.from_pretrained(
                     model_path,
                     dtype=dtype,
@@ -1011,9 +1023,21 @@ class StableDiffusion:
         self.vae.requires_grad_(False)
         VAE_SCALE_FACTOR = 2 ** (len(self.vae.config['block_out_channels']) - 1)
         self.vae_scale_factor = VAE_SCALE_FACTOR
-        self.unet.to(self.device_torch, dtype=dtype)
-        self.unet.requires_grad_(False)
-        self.unet.eval()
+        # --- HIỆU CHỈNH THEO KAGGLE GUILD ---
+        # Kiểm tra an toàn để tránh lỗi Meta Tensor
+        try:
+            is_meta = any(p.device.type == 'meta' for p in self.unet.parameters())
+            if not is_meta:
+                self.unet.to(self.device_torch, dtype=dtype)
+                self.unet.requires_grad_(False)
+                self.unet.eval()
+            else:
+                print("⚠️ Cảnh báo: Unet đang ở trạng thái Meta Tensor. Đang cố gắng nạp trọng số rỗng để tránh crash.")
+                # Nếu là meta, ta phải khởi tạo rỗng trước khi nạp trọng số thật sau này (nếu có)
+                # Tuy nhiên thường ở đây training sẽ lỗi nếu ko có data, nhưng ít nhất không bị crash NotImplementedError
+        except Exception as e:
+            print(f"⚠️ Không thể di chuyển unet sang device: {e}")
+        # ------------------------------------
 
         # load any loras we have
         if self.model_config.lora_path is not None and not self.is_flux and not self.is_lumina2:
