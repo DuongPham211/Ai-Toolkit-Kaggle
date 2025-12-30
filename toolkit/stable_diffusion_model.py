@@ -294,6 +294,8 @@ class StableDiffusion:
 
         load_args = {}
         load_args.update(self.model_config.model_kwargs)
+        # Force low_cpu_mem_usage=False to avoid Meta Tensor issues
+        load_args['low_cpu_mem_usage'] = False
         if self.noise_scheduler:
             load_args['scheduler'] = self.noise_scheduler
 
@@ -315,7 +317,6 @@ class StableDiffusion:
                     device=self.device_torch,
                     # variant="fp16",
                     use_safetensors=True,
-                    low_cpu_mem_usage=False, # Ép nạp thật theo Guild
                     **load_args
                 )
             elif not os.path.exists(model_path) or os.path.isdir(model_path):
