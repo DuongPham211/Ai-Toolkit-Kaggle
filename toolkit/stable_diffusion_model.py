@@ -314,6 +314,8 @@ class StableDiffusion:
                     device=self.device_torch,
                     # variant="fp16",
                     use_safetensors=True,
+                    token=os.environ.get("HF_TOKEN"),
+                    ignore_patterns=["*.bin", "*.onnx", "*.pt", "*.msgpack", "*.ckpt", "*.md", "*.gitattributes"],
                     **load_args
                 )
             else:
@@ -379,6 +381,8 @@ class StableDiffusion:
                 transformer_path,
                 subfolder=subfolder,
                 torch_dtype=dtype,
+                token=os.environ.get("HF_TOKEN"),
+                ignore_patterns=["*.bin", "*.onnx", "*.pt", "*.msgpack", "*.ckpt"],
             )
             if not self.low_vram:
                 # for low v ram, we leave it on the cpu. Quantizes slower, but allows training on primary gpu
@@ -434,7 +438,8 @@ class StableDiffusion:
                         # variant="fp16",
                         use_safetensors=True,
                         repo_type="model",
-                        ignore_patterns=["*.md", "*..gitattributes"],
+                        ignore_patterns=["*.bin", "*.onnx", "*.pt", "*.msgpack", "*.ckpt", "*.md", "*.gitattributes"],
+                        token=os.environ.get("HF_TOKEN"),
                         **load_args
                     )
                 except Exception as e:
