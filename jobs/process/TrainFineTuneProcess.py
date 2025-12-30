@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from jobs import TrainJob
+from ..TrainJob import TrainJob
 from jobs.process import BaseTrainProcess
 
 

@@ -1,11 +1,12 @@
 import json
 import os
 
-from jobs import BaseJob
+from .BaseJob import BaseJob
 from toolkit.kohya_model_util import load_models_from_stable_diffusion_checkpoint
 from collections import OrderedDict
 from typing import List
-from jobs.process import BaseExtractProcess, TrainFineTuneProcess
+from .BaseJob import BaseJob
+from jobs.process import BaseExtractProcess
 from datetime import datetime
 
 

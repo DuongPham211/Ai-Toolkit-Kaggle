@@ -1,6 +1,6 @@
 from toolkit.kohya_model_util import load_models_from_stable_diffusion_checkpoint
 from collections import OrderedDict
-from jobs import BaseJob
+from .BaseJob import BaseJob
 from toolkit.train_tools import get_torch_dtype
 
 process_dict = {

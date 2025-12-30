@@ -1,4 +1,4 @@
-from jobs import BaseJob
+from .BaseJob import BaseJob
 from collections import OrderedDict
 
 process_dict = {

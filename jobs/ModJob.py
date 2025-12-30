@@ -1,6 +1,6 @@
 import os
 from collections import OrderedDict
-from jobs import BaseJob
+from .BaseJob import BaseJob
 from toolkit.metadata import get_meta_for_safetensors
 from toolkit.train_tools import get_torch_dtype
 
