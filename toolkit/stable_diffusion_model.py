@@ -2411,6 +2411,7 @@ class StableDiffusion:
         
         if prompt2 is not None:
             prompt2 = [str(p) if (p is not None and not isinstance(p, bool)) else "" for p in prompt2]
+        pe: PromptEmbeds = None
         if self.is_xl:
             # todo make this a config
             # 50% chance to use an encoder anyway even if it is disabled
@@ -2420,7 +2421,7 @@ class StableDiffusion:
             use_encoder_1 = True
             use_encoder_2 = True
 
-            return PromptEmbeds(
+            pe = PromptEmbeds(
                 train_tools.encode_prompts_xl(
                     self.tokenizer,
                     self.text_encoder,
@@ -2434,8 +2435,8 @@ class StableDiffusion:
                     dropout_prob=dropout_prob,
                 )
             )
-        if self.is_v3:
-            return PromptEmbeds(
+        elif self.is_v3:
+            pe = PromptEmbeds(
                 train_tools.encode_prompts_sd3(
                     self.tokenizer,
                     self.text_encoder,
@@ -2456,7 +2457,7 @@ class StableDiffusion:
                 max_length=300 if self.model_config.is_pixart_sigma else 120,
                 dropout_prob=dropout_prob
             )
-            return PromptEmbeds(
+            pe = PromptEmbeds(
                 embeds,
                 attention_mask=attention_mask,
             )
@@ -2469,7 +2470,7 @@ class StableDiffusion:
                 max_length=256,
                 dropout_prob=dropout_prob
             )
-            return PromptEmbeds(
+            pe = PromptEmbeds(
                 embeds,
                 attention_mask=attention_mask,  # not used
             )
@@ -2487,7 +2488,6 @@ class StableDiffusion:
                 prompt_embeds
             )
             pe.pooled_embeds = pooled_prompt_embeds
-            return pe
 
         elif self.is_lumina2:
             (
@@ -2502,7 +2502,7 @@ class StableDiffusion:
                 device=self.device_torch,
                 max_sequence_length=256, # should it be 512?
             )
-            return PromptEmbeds(
+            pe = PromptEmbeds(
                 prompt_embeds,
                 attention_mask=prompt_attention_mask,
             )
@@ -2520,14 +2520,14 @@ class StableDiffusion:
             # just mask the attention mask
             prompt_attention_mask = attention_mask.unsqueeze(-1).expand(embeds.shape)
             embeds = embeds * prompt_attention_mask.to(dtype=embeds.dtype, device=embeds.device)
-            return PromptEmbeds(
+            pe = PromptEmbeds(
                 embeds,
                 
                 # do we want attn mask here?
                 # attention_mask=attention_mask,
             )
         else:
-            return PromptEmbeds(
+            pe = PromptEmbeds(
                 train_tools.encode_prompts(
                     self.tokenizer,
                     self.text_encoder,
@@ -2537,6 +2537,13 @@ class StableDiffusion:
                     dropout_prob=dropout_prob
                 )
             )
+        
+        if pe is not None and pe.contains_nan_or_inf():
+            print(f"⚠️  WARNING: Prompt embeddings contain NaN or Inf values. Repairing (zeroing).")
+            pe.repair()
+        
+        return pe
+
 
     @torch.no_grad()
     def encode_images(

@@ -114,11 +114,61 @@ class PromptEmbeds:
                 pe.attention_mask = pe.attention_mask.expand(batch_size, -1)
         return pe
 
+    def contains_nan_or_inf(self) -> bool:
+        """
+        Check if the prompt embeds contain NaN or Inf values.
+        :return: True if NaN or Inf values are found, False otherwise.
+        """
+        if isinstance(self.text_embeds, list) or isinstance(self.text_embeds, tuple):
+            for t in self.text_embeds:
+                if torch.isnan(t).any() or torch.isinf(t).any():
+                    return True
+        elif self.text_embeds is not None:
+            if torch.isnan(self.text_embeds).any() or torch.isinf(self.text_embeds).any():
+                return True
+        
+        if self.pooled_embeds is not None:
+            if torch.isnan(self.pooled_embeds).any() or torch.isinf(self.pooled_embeds).any():
+                return True
+        
+        return False
+
+    @property
+    def is_valid(self) -> bool:
+        return not self.contains_nan_or_inf()
+
+    def repair(self):
+        """
+        Replace NaN and Inf values with zeros in text_embeds and pooled_embeds.
+        """
+        if isinstance(self.text_embeds, list) or isinstance(self.text_embeds, tuple):
+            for i in range(len(self.text_embeds)):
+                t = self.text_embeds[i]
+                if torch.isnan(t).any() or torch.isinf(t).any():
+                    t = torch.where(torch.isnan(t), torch.zeros_like(t), t)
+                    t = torch.where(torch.isinf(t), torch.zeros_like(t), t)
+                    self.text_embeds[i] = t
+        elif self.text_embeds is not None:
+            if torch.isnan(self.text_embeds).any() or torch.isinf(self.text_embeds).any():
+                self.text_embeds = torch.where(torch.isnan(self.text_embeds), torch.zeros_like(self.text_embeds), self.text_embeds)
+                self.text_embeds = torch.where(torch.isinf(self.text_embeds), torch.zeros_like(self.text_embeds), self.text_embeds)
+        
+        if self.pooled_embeds is not None:
+            if torch.isnan(self.pooled_embeds).any() or torch.isinf(self.pooled_embeds).any():
+                self.pooled_embeds = torch.where(torch.isnan(self.pooled_embeds), torch.zeros_like(self.pooled_embeds), self.pooled_embeds)
+                self.pooled_embeds = torch.where(torch.isinf(self.pooled_embeds), torch.zeros_like(self.pooled_embeds), self.pooled_embeds)
+
+
+
     def save(self, path: str):
         """
         Save the prompt embeds to a file.
         :param path: The path to save the prompt embeds.
         """
+        if self.contains_nan_or_inf():
+            print(f"⚠️  WARNING: NaN or Inf detected in prompt embeddings for {path}. Repairing (zeroing) before saving.")
+            self.repair()
+
         pe = self.clone()
         state_dict = {}
         if isinstance(pe.text_embeds, list) or isinstance(pe.text_embeds, tuple):
@@ -173,6 +223,11 @@ class PromptEmbeds:
                 pe.attention_mask = attention_mask[0]
             else:
                 pe.attention_mask = attention_mask
+        
+        if pe.contains_nan_or_inf():
+            print(f"⚠️  WARNING: Loaded prompt embeddings from {path} contain NaN or Inf values. Repairing (zeroing).")
+            pe.repair()
+             
         return pe
 
 
