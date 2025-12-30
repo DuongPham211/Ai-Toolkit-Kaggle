@@ -154,7 +154,7 @@ config:
         - folder_path: "/kaggle/input/testarossa-dataset/testarossa-dataset"
           mask_path: null
           mask_min_value: 0.1
-          default_caption: "testarossa a woman"
+          default_caption: "testarossa photo"
           caption_ext: "txt"
           caption_dropout_rate: 0.05
           cache_latents_to_disk: false
@@ -222,8 +222,8 @@ config:
         width: 1024
         height: 1024
         samples:
-          - prompt: "testarossa a woman, cinematic portrait, high detail"
-          - prompt: "testarossa a woman in red dress, studio lighting"
+          - prompt: "testarossa photo, cinematic portrait, high detail"
+          - prompt: "testarossa photo in studio lighting"
         neg: ""
         seed: 42
         walk_seed: true
