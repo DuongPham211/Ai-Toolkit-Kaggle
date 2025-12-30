@@ -467,7 +467,12 @@ class AiToolkitDataset(LatentCachingMixin, ControlCachingMixin, CLIPCachingMixin
         if not os.path.isdir(self.dataset_path):
             dataset_folder = os.path.dirname(dataset_folder)
         
-        dataset_size_file = os.path.join(dataset_folder, '.aitk_size.json')
+        # fix for kaggle read-only file system
+        if dataset_folder.startswith('/kaggle/input'):
+            rel_path = os.path.relpath(dataset_folder, '/kaggle/input')
+            dataset_size_file = os.path.join('/kaggle/working/ai_toolkit_cache', rel_path, '.aitk_size.json')
+        else:
+            dataset_size_file = os.path.join(dataset_folder, '.aitk_size.json')
         dataloader_version = "0.1.2"
         if os.path.exists(dataset_size_file):
             try:

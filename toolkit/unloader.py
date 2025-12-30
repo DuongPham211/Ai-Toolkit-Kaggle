@@ -15,6 +15,14 @@ class FakeTextEncoder(torch.nn.Module):
         self._device = device
         self._dtype = dtype
 
+        # some pipelines check this
+        class FakeConfig:
+            def __init__(self):
+                self.projection_dim = 1280
+                self.hidden_size = 768
+
+        self.config = FakeConfig()
+
     def forward(self, *args, **kwargs):
         raise NotImplementedError(
             "This is a fake text encoder and should not be used for inference."
